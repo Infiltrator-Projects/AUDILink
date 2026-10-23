@@ -71,7 +71,7 @@ jobs:
 
   linux-gui:
     name: Linux GTK4 GUI
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, linux-native]
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
