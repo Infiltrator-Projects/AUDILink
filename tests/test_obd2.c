@@ -6,6 +6,7 @@
 int main(void)
 {
     char command[16], dtc[LINK_OBD2_DTC_TEXT_LENGTH];
+    char short_command[2] = { 'X', '\0' };
     uint16_t did = 0U;
     uint8_t rpm_payload[] = { 0x1aU, 0xf8U };
     AudilinkObd2DecodedPid decoded;
@@ -15,6 +16,12 @@ int main(void)
     CHECK(strcmp(command, "0100") == 0);
     CHECK(audilink_obd2_build_live_pid_request(0x0cU, command, sizeof(command)) == AUDILINK_OBD2_RESULT_OK);
     CHECK(strcmp(command, "010C") == 0);
+    /* The product inherits Link's safe rejection of invalid output buffers. */
+    CHECK(audilink_obd2_build_live_pid_request(0x0cU, short_command, sizeof(short_command)) ==
+          LINK_OBD2_RESULT_BUFFER_TOO_SMALL);
+    CHECK(short_command[0] == '\0');
+    CHECK(audilink_obd2_build_live_pid_request(0x0cU, NULL, sizeof(command)) ==
+          LINK_OBD2_RESULT_INVALID_ARGUMENT);
     CHECK(audilink_obd2_build_vin_request(command, sizeof(command)) == AUDILINK_OBD2_RESULT_OK);
     CHECK(strcmp(command, "0902") == 0);
     CHECK(audilink_obd2_build_dtc_request(AUDILINK_OBD2_DTC_STORED, command, sizeof(command)) == AUDILINK_OBD2_RESULT_OK);
